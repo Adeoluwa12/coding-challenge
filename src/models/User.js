@@ -10,15 +10,23 @@ const UserSchema = new mongoose.Schema({
 
      fullName: {
           type: String,
-          required: [true, "Please provied ypur first name"]
+          required: [true, "Please provied your first name"]
      },
      title: {
           type: String,
-          default: "dr."
+          required: function () {
+               return this.type === ACCOUNT_TYPES.DOCTOR;
+          },
+          enum: ["Dr"],
+          message: 'Title is required for doctor accounts'
      },
      specialization: {
           type: String,
-          required: [true, "please provied area of specialization"]
+
+          required: function () {
+               return this.type === ACCOUNT_TYPES.DOCTOR;
+          },
+          message: 'Specialization is required for doctor accounts'
      },
      email: {
           type: String,
@@ -42,19 +50,29 @@ const UserSchema = new mongoose.Schema({
      type: {
           type: String,
           enum: ACCOUNT_TYPES,
-          default: ACCOUNT_TYPES[0],
+          default: ACCOUNT_TYPES.USER,
      },
      patients: {
           type: Number,
+          required: function () {
+               return this.type === ACCOUNT_TYPES.DOCTOR ? true : false;
+          },
           default: 0,
      },
      years_of_exp: {
           type: Number,
-          required: [true, "Please provide  years of Experince"]
+          required: function () {
+               return this.type === ACCOUNT_TYPES.DOCTOR;
+          },
+          message: 'Years of experience is required for doctor accounts'
      },
      demography: {
           type: String,
-          required: [true, "Please provide tell us about your self"],
+          required: function () {
+               return this.type === ACCOUNT_TYPES.DOCTOR;
+          },
+          message: 'Demography  is required for doctor accounts'
+
      }
 
 
@@ -72,7 +90,7 @@ UserSchema.pre('save', async function () {
 
 UserSchema.methods.createJWT = function () {
      return jwt.sign(
-          { userId: this._id, fullName: this.fullName, email: this.email },
+          { userId: this._id, fullName: this.fullName, email: this.email, type: this.type },
           process.env.JWT_SECRET,
           {
                expiresIn: process.env.JWT_LIFETIME,

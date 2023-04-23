@@ -2,9 +2,25 @@ require('express-async-errors')
 const dotenv = require('dotenv').config();
 const path = require('path')
 
+// // swaggerUI.setup
+// const swaggerUI = require('swagger-ui-express');
+// const swaggerJsdoc = require('swagger-jsdoc');
+// const version = require('./package.json')
+
+// const swaggerOptions = {
+//      swaggerDefinition: {
+//        info: {
+//          title: 'REST API Docs',
+//          version: '1.0.0',
+//          description: 'Telemedicine App'
+//        },
+//      //   basePath: "./app/*.js"
+//      },
+//      apis: ["./src/app.js/*.js", "./src/models/*.js"],
+//    };
 
 
-
+//    const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 const express = require('express');
 const app = express();
@@ -30,6 +46,9 @@ const connectDB = require("./DB/connect");
 
 const AuthDoctor = require('./routers/doctorAuthRouter')
 const GetDoctor = require('./routers/doctorRouter');
+const RatingDoctor = require('./routers/ratingRouter')
+const UserAuth = require('./routers/userAuthRouter');
+const GetUser = require('./routers/userRouter')
 
 
 
@@ -57,11 +76,22 @@ app.get("/", (req, res) => {
    
    });
 
+//    app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+
+//    app.get("docs.json", (req, res) => {
+//      res.setHeader("Content-Type", "application/json");
+//      res.send(swaggerDocs)
+//    })
+
 
    //USE routes
 
    app.use('/api/v1/auth/doctors', AuthDoctor);
-   app.use('/api/v1/doctors', GetDoctor)
+   app.use('/api/v1/doctors', GetDoctor);
+   app.use('/api/v1/ratings', RatingDoctor);
+   app.use('/api/v1/auth/users', UserAuth);
+   app.use('/api/v1/users', GetUser)
+   
    
 
 

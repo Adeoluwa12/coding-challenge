@@ -8,15 +8,7 @@ const RatingSchema = new mongoose.Schema(
       max: 5,
       required: [true, "Please provided rating"],
     },
-    title: {
-      type: String,
-      required: [true, "Please provide rating title"],
-      maxlength: 100,
-    },
-    comment: {
-      type: String,
-      required: [true, "Please provied the comment"],
-    },
+
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
@@ -26,6 +18,10 @@ const RatingSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    comment: {
+      type: String,
+      required: true
     },
     avg: {
       type: Number,
@@ -44,5 +40,5 @@ RatingSchema.post("remove", async function () {
   await this.constructor.calculateAverageRating(this.user);
 });
 
-module.exports  = mongoose.model("Rating", RatingSchema);
+module.exports = mongoose.model("Rating", RatingSchema);
 

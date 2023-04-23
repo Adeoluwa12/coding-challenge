@@ -11,7 +11,17 @@ const {
 } = require('../controllers/doctorController');
 
 
-
+/**
+ * "@openapi":
+ * 'api/v1/doctors':
+ * get:
+ * tages:
+ *  - Doctors
+ * dec: Response if the app is up and running
+ * responses:
+ * 200:
+ * dec: APP is up and running
+ */
 router
 .route('/')
 .get(getAllDoctors)

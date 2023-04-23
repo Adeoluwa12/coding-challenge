@@ -1,7 +1,7 @@
-const User = require('../models/User');
-const CustomError = require("../errors");
+const User = require("../models/User");
 const { ACCOUNT_TYPES } = require('../constant');
-const { StatusCodes } = require('http-status-codes');
+const { StatusCodes } = require("http-status-codes");
+const CustomError = require("../errors");
 
 
 
@@ -17,16 +17,14 @@ const validatePasswordString = (password) => {
 }
 
 
-//Create Doctors
+
+//Create User
 const create = async (req, res) => {
      const {
           email,
           number,
           fullName,
-          specialization,
           password,
-          years_of_exp,
-          demography,
 
      } = req.body;
 
@@ -50,11 +48,9 @@ const create = async (req, res) => {
           email,
           number,
           fullName,
-          specialization,
           password,
-          years_of_exp,
-          demography,
-          type: ACCOUNT_TYPES.DOCTOR,
+
+
      })
 
 
@@ -63,14 +59,11 @@ const create = async (req, res) => {
      res.status(StatusCodes.OK).json({
           user: {
                _id: user._id,
-               title: user.title,
                fullname: user.fullName,
-               specialization: user.specialization,
+
                type: user.type,
                email: user.email,
                number: user.number,
-               years_of_exp: user.years_of_exp,
-               demography: user.demography
           },
 
           token
@@ -102,20 +95,20 @@ const login = async (req, res) => {
           throw new CustomError.UnauthenticatedError('Invalid Credentials');
      }
 
-        
+
 
      const token = user.createJWT()
-     
+
      res.status(StatusCodes.OK).json({
           user: {
-               title: user.title,
+               _id: user._id,
                fullname: user.fullName,
-               specialization: user.specialization,
+
                type: user.type,
                email: user.email,
                number: user.number,
           },
-           token,
+          token,
      });
 };
 
