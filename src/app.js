@@ -48,7 +48,8 @@ const AuthDoctor = require('./routers/doctorAuthRouter')
 const GetDoctor = require('./routers/doctorRouter');
 const RatingDoctor = require('./routers/ratingRouter')
 const UserAuth = require('./routers/userAuthRouter');
-const GetUser = require('./routers/userRouter')
+const GetUser = require('./routers/userRouter');
+const appointmentRouter = require('./routers/appointmentRouter')
 
 
 
@@ -90,7 +91,8 @@ app.get("/", (req, res) => {
    app.use('/api/v1/doctors', GetDoctor);
    app.use('/api/v1/ratings', RatingDoctor);
    app.use('/api/v1/auth/users', UserAuth);
-   app.use('/api/v1/users', GetUser)
+   app.use('/api/v1/users', GetUser);
+   app.use('api/v1/appointments', appointmentRouter);
    
    
 
