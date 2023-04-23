@@ -26,7 +26,10 @@ const mongoSanitize = require("express-mongo-sanitize");
 //Database
 const connectDB = require("./DB/connect");
 
+//IMPORT ROUTERS
 
+const AuthDoctor = require('./routers/doctorAuthRouter')
+const GetDoctor = require('./routers/doctorRouter');
 
 
 
@@ -50,9 +53,16 @@ app.use(express.json());
 
 
 app.get("/", (req, res) => {
-     res.json({ message: "Welcome to coding-challenge" });
+     res.json({ message: "Welcome to Telemedicine App" });
    
    });
+
+
+   //USE routes
+
+   app.use('/api/v1/auth/doctors', AuthDoctor);
+   app.use('/api/v1/doctors', GetDoctor)
+   
 
 
 
