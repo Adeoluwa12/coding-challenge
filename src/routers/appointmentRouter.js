@@ -14,18 +14,18 @@ const {
 
 
 router
-    .route('/')
-    .post(createAppointment)
-    .get(getAppointments);
+     .route('/')
+     .post(createAppointment)
+     .get(getAppointments);
 
 
 
-    router
-    .route('/:id')
-    .get(getAppointmentById)
-    .patch(updateAppointment)
-    .delete(deleteAppointment);
+router
+     .route('/:id')
+     .get(getAppointmentById)
+     .patch(updateAppointment)
+     .delete(deleteAppointment);
 
 
 
-    module.exports = router
+module.exports = router

@@ -12,7 +12,7 @@ const creatRating = async (req, res) => {
 
      isValidDoctor = await User.findOne({ _id: doctor });
 
-     if (!isValidDoctor) throw new CustomError.NotFoundError(`No Doctor with id: ${doctor}`)
+     if (!isValidDoctor) throw new CustomError.NotFoundError(`No Doctor with id: ${isValidDoctor}`)
 
 
      const alreadySumited = await Rating.findOne({
@@ -86,34 +86,42 @@ const getSingleDriverRating = async (req, res) => {
 
      const doctorId = await Rating.find({ doctor });
 
-     if (!doctorId) {
-          throw new CustomError.NotFoundError(`No rating with doctor: ${doctor}`);
+     if (!doctorId || doctorId.length === 0) {
+          throw new CustomError.NotFoundError(`No ratings found for doctor with ID: ${doctor}`);
      }
 
      const result = doctorId
           .filter((doctorrate) => doctorrate.rating >= 0)
           .reduce((a, b) => a + b.rating / doctorId.length, 0);
 
-     await Rating.updateOne({ _id: doctorId[0]._id }, { $set: { avg: result } });
+     const updatedRating = await Rating.findByIdAndUpdate(
+          doctorId[0]._id,
+          { $set: { avg: result } },
+          { new: true }
+     );
+
+     if (!updatedRating) {
+          throw new CustomError.InternalServerError(`Failed to update rating for doctor with ID: ${doctor}`);
+     }
 
      console.log(result);
      res.status(StatusCodes.OK).json({
-          message: `Fatched Succesfully`,
-
+          message: `Rating updated successfully`,
           data: result,
      });
 };
 
 
 
+
 const review = async (req, res) => {
-       
+
      const { id: doctor } = req.params;
-     
+
      const numReviews = await Rating.countDocuments({ doctor });
 
      res.status(StatusCodes.OK).json({
-          numReviews 
+          numReviews
      })
 }
 

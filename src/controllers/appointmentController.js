@@ -34,7 +34,10 @@ const createAppointment = async (req, res, next) => {
 const getAppointments = async (req, res, next) => {
 
      const appointments = await Appointment.find();
-     res.status(StatusCodes.OK).json(appointments);
+     res.status(StatusCodes.OK).json({
+          count: appointments.length,
+          appointments
+     });
 
 };
 

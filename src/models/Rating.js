@@ -32,13 +32,7 @@ const RatingSchema = new mongoose.Schema(
 );
 
 
-RatingSchema.post("save", async function () {
-  await this.constructor.calculateAverageRating(this.user);
-});
 
-RatingSchema.post("remove", async function () {
-  await this.constructor.calculateAverageRating(this.user);
-});
 
 module.exports = mongoose.model("Rating", RatingSchema);
 

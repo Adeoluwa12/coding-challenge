@@ -18,7 +18,7 @@ const AppointmentSchema = new mongoose.Schema({
           validate: {
                validator: function (v) {
                     // Check if value is a valid weekday (Monday to Friday)
-                    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+                    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday','Sunday'];
                     if (weekdays.includes(v)) {
                          return true;
                     }

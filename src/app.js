@@ -92,7 +92,7 @@ app.get("/", (req, res) => {
    app.use('/api/v1/ratings', RatingDoctor);
    app.use('/api/v1/auth/users', UserAuth);
    app.use('/api/v1/users', GetUser);
-   app.use('api/v1/appointments', appointmentRouter);
+   app.use('/api/v1/appointments', appointmentRouter);
    
    
 
