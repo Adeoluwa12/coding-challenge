@@ -1,9 +1,13 @@
 const User = require('../models/User');
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
-const { body, validationResult } = require('express-validator');
+const cloudinary = require('cloudinary').v2;
 
-
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET
+});
 
 const getAllUsers = async (req, res) => {
   const users = await User.find({ type: 'user' })
@@ -50,12 +54,14 @@ const updateImage = async (req, res) => {
 
   const { id:  userId } = req.params;
 
+  const result = await cloudinary.uploader.upload(file.path);
+
   const user = await User.findOneAndUpdate( 
     {
       _id: userId,
     },
      {
-    image: req.file.path
+    image: result.secure_url
   },
     {
       new: true,
