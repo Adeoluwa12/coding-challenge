@@ -114,6 +114,7 @@ const login = async (req, res) => {
                type: user.type,
                email: user.email,
                number: user.number,
+               image: user.image
           },
            token,
      });
