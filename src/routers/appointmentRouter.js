@@ -10,7 +10,9 @@ const {
      updateAppointment,
      deleteAppointment,
      getAppointmentsByUser,
-     getAppointmentsByDoctor
+     getAppointmentsByDoctor,
+     acceptAppointment,
+     rejectAppointment
 } = require('../controllers/appointmentController')
 
 
@@ -36,7 +38,17 @@ router
 
 router
      .route('/find/doctor')
-     .post(getAppointmentsByDoctor);     
+     .post(getAppointmentsByDoctor);
+
+
+router
+     .route('/accept')
+     .put(acceptAppointment);
+
+
+router
+     .route('/reject')
+     .put(rejectAppointment);
 
 
 

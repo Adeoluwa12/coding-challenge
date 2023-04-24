@@ -1,4 +1,9 @@
 const mongoose = require('mongoose')
+const { APPOINTMENT_STATUS } = require('../constant/index')
+
+
+
+
 
 const AppointmentSchema = new mongoose.Schema({
      doctor: {
@@ -18,7 +23,7 @@ const AppointmentSchema = new mongoose.Schema({
           validate: {
                validator: function (v) {
                     // Check if value is a valid weekday (Monday to Friday)
-                    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday','Sunday'];
+                    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
                     if (weekdays.includes(v)) {
                          return true;
                     }
@@ -39,6 +44,11 @@ const AppointmentSchema = new mongoose.Schema({
                },
                message: props => `${props.value} is not a valid time format (HH:MM AM/PM)`
           }
+     },
+     status: {
+          type: String,
+          enum: APPOINTMENT_STATUS,
+          default: APPOINTMENT_STATUS.PENDING
      }
 }, { timestamps: true });
 

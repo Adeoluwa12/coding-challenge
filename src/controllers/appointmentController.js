@@ -3,7 +3,7 @@ const CustomError = require("../errors");
 const { StatusCodes } = require('http-status-codes');
 const User = require('../models/User');
 const mongoose = require('mongoose');
-
+const { APPOINTMENT_STATUS } = require('../constant/index')
 
 
 
@@ -138,6 +138,54 @@ const getAppointmentsByDoctor = async (req, res, next) => {
 };
 
 
+const acceptAppointment = async (req, res, next) => {
+     try {
+       const { id } = req.body;
+   
+       const appointment = await Appointment.findById(id);
+   
+       if (!appointment) {
+         throw new CustomError.NotFoundError('No appointment found');
+       }
+   
+       await Appointment.updateOne(
+         { _id: appointment._id },
+         { $set: { status: APPOINTMENT_STATUS.ACCEPTED } }
+       );
+   
+       res.status(StatusCodes.OK).json({
+         message: `Appointment with id ${appointment._id} has been accepted`,
+       });
+     } catch (error) {
+       next(error);
+     }
+   };
+
+
+
+const rejectAppointment = async (req, res ) => {
+     
+     const { id } = req.body;
+  const updateAPPId = await Appointment.findById(id);
+
+  if (!updateAPPId) {
+    throw new CustomError.NotFoundError("No appointment found");
+  }
+
+  await Appointment.updateOne(
+    { _id: updateAPPId },
+    { $set: { status: APPOINTMENT_STATUS.REJECTED } }
+  );
+
+  res.status(StatusCodes.OK).json({
+    message: `Your appointment has been rejected`,
+  });
+};
+
+
+
+
+
 
 module.exports = {
      createAppointment,
@@ -146,5 +194,7 @@ module.exports = {
      updateAppointment,
      deleteAppointment,
      getAppointmentsByUser,
-     getAppointmentsByDoctor
+     getAppointmentsByDoctor,
+     acceptAppointment,
+     rejectAppointment
 }
