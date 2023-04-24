@@ -2,6 +2,7 @@ const Appointment = require('../models/Appointment')
 const CustomError = require("../errors");
 const { StatusCodes } = require('http-status-codes');
 const User = require('../models/User');
+const mongoose = require('mongoose');
 
 
 
@@ -93,10 +94,57 @@ const deleteAppointment = async (req, res, next) => {
      res.status(StatusCodes.OK).json({ message: 'Appointment deleted successfully' });
 }
 
+const getAppointmentsByUser = async (req, res, next) => {
+     const { user } = req.body;
+  
+     if (!mongoose.Types.ObjectId.isValid(user)) {
+       return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid user ID' });
+     }
+     
+     const userId = await User.findById(user);
+     
+     if (!userId) {
+       return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+     }
+     
+     const appointments = await Appointment.find({ user: user });
+     
+     res.status(StatusCodes.OK).json({
+       count: appointments.length,
+       appointments
+     });
+};
+
+
+const getAppointmentsByDoctor = async (req, res, next) => {
+     const { doctor } = req.body;
+  
+     if (!mongoose.Types.ObjectId.isValid(doctor)) {
+       return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid doctor ID' });
+     }
+     
+     const doctorId = await User.findById(doctor);
+     
+     if (!doctorId) {
+       return res.status(StatusCodes.NOT_FOUND).json({ message: 'Doctor not found' });
+     }
+     
+     const appointments = await Appointment.find({ doctor: doctor });
+     
+     res.status(StatusCodes.OK).json({
+       count: appointments.length,
+       appointments
+     });
+};
+
+
+
 module.exports = {
      createAppointment,
      getAppointments,
      getAppointmentById,
      updateAppointment,
-     deleteAppointment
+     deleteAppointment,
+     getAppointmentsByUser,
+     getAppointmentsByDoctor
 }

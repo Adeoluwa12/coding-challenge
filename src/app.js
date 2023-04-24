@@ -2,30 +2,13 @@ require('express-async-errors')
 const dotenv = require('dotenv').config();
 const path = require('path')
 
-// // swaggerUI.setup
-// const swaggerUI = require('swagger-ui-express');
-// const swaggerJsdoc = require('swagger-jsdoc');
-// const version = require('./package.json')
 
-// const swaggerOptions = {
-//      swaggerDefinition: {
-//        info: {
-//          title: 'REST API Docs',
-//          version: '1.0.0',
-//          description: 'Telemedicine App'
-//        },
-//      //   basePath: "./app/*.js"
-//      },
-//      apis: ["./src/app.js/*.js", "./src/models/*.js"],
-//    };
-
-
-//    const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 const express = require('express');
 const app = express();
 
-
+const swaggerUI = require('swagger-ui-express');
+const specs = require('./utils/swagger')
 
 // Express packages
 
@@ -72,34 +55,41 @@ app.use(express.json());
 
 
 
+
+
+
 app.get("/", (req, res) => {
      res.json({ message: "Welcome to Telemedicine App" });
-   
-   });
 
-//    app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
-
-//    app.get("docs.json", (req, res) => {
-//      res.setHeader("Content-Type", "application/json");
-//      res.send(swaggerDocs)
-//    })
-
-
-   //USE routes
-
-   app.use('/api/v1/auth/doctors', AuthDoctor);
-   app.use('/api/v1/doctors', GetDoctor);
-   app.use('/api/v1/ratings', RatingDoctor);
-   app.use('/api/v1/auth/users', UserAuth);
-   app.use('/api/v1/users', GetUser);
-   app.use('/api/v1/appointments', appointmentRouter);
-   
-   
+});
 
 
 
 
-   //ErrorHandlerMiddleware
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs, { explorer: true }));
+
+// serve swagger
+app.get('/swagger.json', function (req, res) {
+     res.setHeader('Content-Type', 'application/json');
+     res.json(specs);
+});
+
+
+//USE routes
+
+app.use('/api/v1/auth/doctors', AuthDoctor);
+app.use('/api/v1/doctors', GetDoctor);
+app.use('/api/v1/ratings', RatingDoctor);
+app.use('/api/v1/auth/users', UserAuth);
+app.use('/api/v1/users', GetUser);
+app.use('/api/v1/appointments', appointmentRouter);
+
+
+
+
+
+
+//ErrorHandlerMiddleware
 const notFoundMiddleware = require("./middleware/not-found");
 const errorHandlerMiddleware = require("./middleware/error-handler");
 
@@ -107,10 +97,10 @@ const errorHandlerMiddleware = require("./middleware/error-handler");
 
 app.set("trust proxy", 1);
 app.use(
-  rateLimiter({
-    windowMs: 15 * 60 * 1000,
-    max: 60,
-  })
+     rateLimiter({
+          windowMs: 15 * 60 * 1000,
+          max: 60,
+     })
 );
 app.use(helmet());
 app.use(xss());
@@ -128,14 +118,14 @@ app.use(errorHandlerMiddleware);
 const port = process.env.PORT || 5000;
 
 const start = async () => {
-  try {
-    await connectDB(process.env.MONGO_URI);
-    app.listen(port, () => {
-      console.log(`listing on port ${port}...`);
-    });
-  } catch (error) {
-    console.log(error);
-  }
+     try {
+          await connectDB(process.env.MONGO_URI);
+          app.listen(port, () => {
+               console.log(`listing on port ${port}...`);
+          });
+     } catch (error) {
+          console.log(error);
+     }
 };
 
 start();

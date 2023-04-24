@@ -8,7 +8,9 @@ const {
      getAppointments,
      getAppointmentById,
      updateAppointment,
-     deleteAppointment
+     deleteAppointment,
+     getAppointmentsByUser,
+     getAppointmentsByDoctor
 } = require('../controllers/appointmentController')
 
 
@@ -25,6 +27,16 @@ router
      .get(getAppointmentById)
      .patch(updateAppointment)
      .delete(deleteAppointment);
+
+
+router
+     .route('/user')
+     .post(getAppointmentsByUser);
+
+
+router
+     .route('/find/doctor')
+     .post(getAppointmentsByDoctor);     
 
 
 
