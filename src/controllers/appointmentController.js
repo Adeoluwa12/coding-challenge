@@ -4,7 +4,7 @@ const { StatusCodes } = require('http-status-codes');
 const User = require('../models/User');
 const mongoose = require('mongoose');
 const { APPOINTMENT_STATUS } = require('../constant/index')
-
+const pusher = require('../controllers/notificationController');
 
 
 
@@ -28,6 +28,19 @@ const createAppointment = async (req, res, next) => {
      }
 
      const savedAppointment = await appointment.save();
+
+     // Push notification to the doctor channel
+     const channelName = `doctor_${doctor}`;
+     const eventData = {
+          appointment: savedAppointment,
+          user: savedAppointment.user
+     };
+     setTimeout(() => {
+          pusher.trigger(channelName, 'appointment_created', eventData);
+     }, 4 * 60 * 1000); // 4 minutes delay
+
+
+
      res.status(StatusCodes.CREATED).json({ message: 'Appointment created successfully', appointment: savedAppointment });
 }
 
@@ -96,90 +109,109 @@ const deleteAppointment = async (req, res, next) => {
 
 const getAppointmentsByUser = async (req, res, next) => {
      const { user } = req.body;
-  
+
      if (!mongoose.Types.ObjectId.isValid(user)) {
-       return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid user ID' });
+          return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid user ID' });
      }
-     
+
      const userId = await User.findById(user);
-     
+
      if (!userId) {
-       return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+          return res.status(StatusCodes.NOT_FOUND).json({ message: 'User not found' });
      }
-     
+
      const appointments = await Appointment.find({ user: user });
-     
+
      res.status(StatusCodes.OK).json({
-       count: appointments.length,
-       appointments
+          count: appointments.length,
+          appointments
      });
 };
 
 
 const getAppointmentsByDoctor = async (req, res, next) => {
      const { doctor } = req.body;
-  
+
      if (!mongoose.Types.ObjectId.isValid(doctor)) {
-       return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid doctor ID' });
+          return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid doctor ID' });
      }
-     
+
      const doctorId = await User.findById(doctor);
-     
+
      if (!doctorId) {
-       return res.status(StatusCodes.NOT_FOUND).json({ message: 'Doctor not found' });
+          return res.status(StatusCodes.NOT_FOUND).json({ message: 'Doctor not found' });
      }
-     
+
      const appointments = await Appointment.find({ doctor: doctor });
-     
+
      res.status(StatusCodes.OK).json({
-       count: appointments.length,
-       appointments
+          count: appointments.length,
+          appointments
      });
 };
 
 
 const acceptAppointment = async (req, res, next) => {
      try {
-       const { id } = req.body;
-   
-       const appointment = await Appointment.findById(id);
-   
-       if (!appointment) {
-         throw new CustomError.NotFoundError('No appointment found');
-       }
-   
-       await Appointment.updateOne(
-         { _id: appointment._id },
-         { $set: { status: APPOINTMENT_STATUS.ACCEPTED } }
-       );
-   
-       res.status(StatusCodes.OK).json({
-         message: `Appointment with id ${appointment._id} has been accepted`,
-       });
+          const { id } = req.body;
+
+          const appointment = await Appointment.findById(id);
+
+          if (!appointment) {
+               throw new CustomError.NotFoundError('No appointment found');
+          }
+
+          await Appointment.updateOne(
+               { _id: appointment._id },
+               { $set: { status: APPOINTMENT_STATUS.ACCEPTED } }
+          );
+
+
+
+          const userId = appointment.user; // assuming you have a user id in your appointment model
+          const message = `Your appointment with id ${appointment._id} has been accepted.`;
+
+          pusher.trigger(`user-${userId}`, 'appointment-accepted', { message });
+           console.log(pusher);
+          res.status(StatusCodes.OK).json({
+               message: `Appointment with id ${appointment._id} has been accepted`,
+          });
      } catch (error) {
-       next(error);
+          next(error);
      }
-   };
+};
 
 
 
-const rejectAppointment = async (req, res ) => {
-     
-     const { id } = req.body;
-  const updateAPPId = await Appointment.findById(id);
+const rejectAppointment = async (req, res) => {
 
-  if (!updateAPPId) {
-    throw new CustomError.NotFoundError("No appointment found");
-  }
+     try {
+          const { id } = req.body;
 
-  await Appointment.updateOne(
-    { _id: updateAPPId },
-    { $set: { status: APPOINTMENT_STATUS.REJECTED } }
-  );
+          const appointment = await Appointment.findById(id);
 
-  res.status(StatusCodes.OK).json({
-    message: `Your appointment has been rejected`,
-  });
+          if (!appointment) {
+               throw new CustomError.NotFoundError('No appointment found');
+          }
+
+          await Appointment.updateOne(
+               { _id: appointment._id },
+               { $set: { status: APPOINTMENT_STATUS.REJECTED } }
+          );
+
+
+
+          const userId = appointment.user; 
+          const message = `Your appointment with id ${appointment._id} has been rejected.`;
+
+          pusher.trigger(`user-${userId}`, 'appointment-rejected', { message });
+
+          res.status(StatusCodes.OK).json({
+               message: `Appointment with id ${appointment._id} has been rejected`,
+          });
+     } catch (error) {
+          next(error);
+     }
 };
 
 
