@@ -13,28 +13,41 @@ const {
      getSingleDoctorRating
 } = require('../controllers/ratingController')
 
+const {
+     verifyToken,
+     verifyTokenAndAuthorization,
+     verifyTokenAndAdmin,
 
+} = require('../middleware/jwt_helper')
+
+const {
+     authenticateUser,
+     authorizePermissions,
+} = require('../middleware/authentication')
 
 router
      .route('/')
-     .post(creatRating)
-     .get(getAllRatings)
+     .post(verifyToken, creatRating)
+     .get(verifyToken, getAllRatings)
 
 
 router
      .route("/:id")
 
-     .patch(updateRating)
-     .delete(deleteRating);
+     .patch(verifyToken, updateRating)
+     .delete(verifyToken, deleteRating);
 
 
 
 router
      .route('/one-doctor')
-     .post(getSingleDoctorRating);
+     .post(verifyToken, getSingleDoctorRating);
 
-   
+
 router
      .route('/:id/review')
-     .get(review)     
+     .get(verifyToken, review)
+
+
+     
 module.exports = router;

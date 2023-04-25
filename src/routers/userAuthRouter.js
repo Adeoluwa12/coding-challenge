@@ -9,7 +9,12 @@ const {
      login
 } = require('../controllers/userAuth');
 
+const {
+     verifyToken,
+     verifyTokenAndAuthorization,
+     verifyTokenAndAdmin,
 
+} = require('../middleware/jwt_helper')
 
 
 router
@@ -17,7 +22,7 @@ router
 .post(create)
 
 router.post('/login', login);
-router.get('/logout', logout);
+router.get('/logout', verifyToken,logout);
 
 
 

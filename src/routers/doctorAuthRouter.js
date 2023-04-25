@@ -5,7 +5,6 @@ const router = express.Router();
 
 const {
      create,
-     logout,
      login
 } = require('../controllers/doctorAuth');
 
@@ -13,11 +12,11 @@ const {
 
 
 router
-.route('/signup')
-.post(create)
+     .route('/signup')
+     .post(create)
 
 router.post('/login', login);
-router.get('/logout', logout);
+
 
 
 

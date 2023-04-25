@@ -17,13 +17,16 @@ const authenticateUser = async (req, res, next) => {
   }
 };
 
-const authorizePermissions = (...roles) => {
+const authorizePermissions = (...allowedAccountTypes) => {
   return (req, res, next) => {
-    if (!type.includes(req.user.type)) {
+    const userAccountType = req.user.type;
+
+    if (!allowedAccountTypes.includes(userAccountType)) {
       throw new CustomError.UnauthorizedError(
         'Unauthorized to access this route'
       );
     }
+
     next();
   };
 };

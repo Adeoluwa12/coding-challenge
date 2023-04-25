@@ -11,15 +11,28 @@ const {
 } = require('../controllers/roomController')
 
 
+const {
+     verifyToken,
+     verifyTokenAndAuthorization,
+     verifyTokenAndAdmin,
 
-router.post('/', createRoom)
+} = require('../middleware/jwt_helper')
+
+const {
+     authenticateUser,
+     authorizePermissions,
+} = require('../middleware/authentication')
 
 
-router.get('/', getAllRooms
+
+router.post('/', verifyToken, createRoom)
+
+
+router.get('/', verifyToken, getAllRooms
 )
 
-router.get('/find/', getOneUSerConversation);
-router.post('/find/user', getTwoUserConversations);
+router.get('/find/', verifyToken, getOneUSerConversation);
+router.post('/find/user', verifyToken, getTwoUserConversations);
 
 
 module.exports = router;

@@ -12,17 +12,28 @@ const {
 } = require('../controllers/doctorController');
 
 
+const {
+     verifyToken,
+     verifyTokenAndAuthorization,
+     verifyTokenAndAdmin,
+     
+} = require('../middleware/jwt_helper')
+
+const {
+     authenticateUser,
+     authorizePermissions,
+} = require('../middleware/authentication')
 
 router
 .route('/')
-.get(getAllDoctors)
+.get(verifyToken,getAllDoctors)
 
 
 router
 .route('/:id')
-.get(getOneDoctor)
-.patch(updateDoctor)
-.delete(deleteDoctor)
+.get(verifyToken,getOneDoctor)
+.patch(verifyToken,updateDoctor)
+.delete(verifyToken,deleteDoctor)
 
 
 

@@ -46,17 +46,17 @@ const getTwoUserConversations = async (req, res) => {
 
      const { firstId , secondId } = req.body;
 
-     const conversation = await Room.findOne({
+     const room = await Room.findOne({
        members: { $all: [ firstId, secondId ] }
      });
 
-     if(!conversation) {
-          throw new CustomError.NotFoundError(`conversation not found`);
+     if(!room) {
+          throw new CustomError.NotFoundError(`room not found`);
      }
 
      res.status(StatusCodes.OK).json({
           message: `true`,
-          conversation
+          room
      })
 }
 
@@ -66,16 +66,16 @@ const getOneUSerConversation = async (req, res) => {
 
      const {  userId } = req.body;;
 
-  const conversation = await Room.find({
+  const room = await Room.find({
      members: { $in:  [  userId ] }
 });
 
-if (!conversation) {
-     throw new CustomError.NotFoundError(`conversation not found`);
+if (!room) {
+     throw new CustomError.NotFoundError(`room not found`);
 }
   res.status(StatusCodes.OK).json({
      message: `true`,
-     conversation
+     room
 });
 };
 

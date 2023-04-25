@@ -19,7 +19,7 @@ const {
      verifyToken,
      verifyTokenAndAuthorization,
      verifyTokenAndAdmin,
-     authenticationMiddleware
+     
 } = require('../middleware/jwt_helper')
 
 const {
@@ -28,36 +28,36 @@ const {
 } = require('../middleware/authentication')
 router
      .route('/')
-     .post(createAppointment)
-     .get(authenticationMiddleware, getAppointments);
+     .post(verifyToken,authorizePermissions('user', 'doctor'),createAppointment)
+     .get(verifyToken, getAppointments);
 
 
 
 router
      .route('/:id')
-     .get(authenticationMiddleware, getAppointmentById)
-     .patch(authenticationMiddleware, updateAppointment)
-     .delete(authenticationMiddleware, deleteAppointment);
+     .get(verifyToken, getAppointmentById)
+     .patch(verifyToken, updateAppointment)
+     .delete(verifyToken, deleteAppointment);
 
 
 router
      .route('/user')
-     .post(getAppointmentsByUser);
+     .post(verifyToken,getAppointmentsByUser);
 
 
 router
      .route('/find/doctor')
-     .post(getAppointmentsByDoctor);
+     .post(verifyToken,getAppointmentsByDoctor);
 
 
 router
      .route('/accept')
-     .put(acceptAppointment);
+     .put(verifyToken,acceptAppointment);
 
 
 router
      .route('/reject')
-     .put(rejectAppointment);
+     .put(verifyToken,rejectAppointment);
 
 
 

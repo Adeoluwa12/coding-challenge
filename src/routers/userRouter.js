@@ -14,13 +14,19 @@ const {
 
 
 
+const {
+     verifyToken,
+     verifyTokenAndAuthorization,
+     verifyTokenAndAdmin,
+     
+} = require('../middleware/jwt_helper')
 
+const {
+     authenticateUser,
+     authorizePermissions,
+} = require('../middleware/authentication')
 
-const storage = multer.diskStorage({
-
-
-
-});
+const storage = multer.diskStorage({});
 
 const fileFilter = (req, file, cb) => {
      let allowedMimeTypes = ["image/jpg", "image/gif", "image/jpeg", "image/png"]
@@ -37,18 +43,18 @@ const upload = multer({ storage, fileFilter, fileSize: 1024 * 1024 * 5 })
 
 router
      .route('/')
-     .get(getAllUsers)
+     .get(verifyToken,getAllUsers)
 
 
 router
      .route('/:id')
-     .get(getOneUser)
-     .patch(updateUser)
-     .delete(deleteUser)
+     .get(verifyToken,getOneUser)
+     .patch(verifyToken,updateUser)
+     .delete(verifyToken,deleteUser)
 
 
 router
-     .patch("/:id/image", upload.single('image'), updateImage)
+     .patch("/:id/image", upload.single('image'),verifyToken, updateImage)
 
 
 
