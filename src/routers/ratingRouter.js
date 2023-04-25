@@ -10,7 +10,7 @@ const {
      review,
      updateRating,
      deleteRating,
-     getSingleDriverRating,
+     getSingleDoctorRating
 } = require('../controllers/ratingController')
 
 
@@ -31,7 +31,7 @@ router
 
 router
      .route('/one-doctor')
-     .post(getSingleDriverRating);
+     .post(getSingleDoctorRating);
 
    
 router

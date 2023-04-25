@@ -17,24 +17,27 @@ const {
 
 const {
      verifyToken,
-  verifyTokenAndAuthorization,
-  verifyTokenAndAdmin,
-  authenticationMiddleware
+     verifyTokenAndAuthorization,
+     verifyTokenAndAdmin,
+     authenticationMiddleware
 } = require('../middleware/jwt_helper')
 
-
+const {
+     authenticateUser,
+     authorizePermissions,
+} = require('../middleware/authentication')
 router
      .route('/')
      .post(createAppointment)
-     .get(authenticationMiddleware,getAppointments);
+     .get(authenticationMiddleware, getAppointments);
 
 
 
 router
      .route('/:id')
-     .get(getAppointmentById)
-     .patch(updateAppointment)
-     .delete(deleteAppointment);
+     .get(authenticationMiddleware, getAppointmentById)
+     .patch(authenticationMiddleware, updateAppointment)
+     .delete(authenticationMiddleware, deleteAppointment);
 
 
 router

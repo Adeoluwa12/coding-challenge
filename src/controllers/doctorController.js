@@ -2,29 +2,7 @@ const User = require('../models/User');
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
 
-const multer = require('multer');
-const path = require('path');
 
-
-const storage = multer.diskStorage({
-     destination: './public/upload',
-     filename: (req, file, cb) => {
-         return cb(null,` ${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`)
-     }
-   });
-   
-   const fileFilter = (req, file, cb) => {
-     let allowedMimeTypes = ["image/jpg", "image/gif", "image/jpeg", "image/png"]
-     if(!allowedMimeTypes.includes(file.mimetype)){
-         return cb(new CustomError("Please provide a valid image file", 400), false)
-     }
-   
-     return cb(null, true);
-   
-   };
-
-
-   const upload = multer({storage, fileFilter,fileSize: 1024 * 1024 * 5}).single('image')
 
 
 
@@ -59,33 +37,63 @@ const getOneDoctor = async (req, res) => {
 }
 
 
-const updateImage = async (req, res) => {
-     upload(req, res, (err) => {
-          if (err) {
-            console.log(err);
-            return res.status(400).json({ message: "Error uploading image" });
-          }
-          User.findById(req.params.id, (err, user) => {
-            if (err) {
-              console.log(err);
-              return res.status(400).json({ message: "User not found" });
-            }
-            user.image = req.file.filename;
-            user.save((err) => {
-              if (err) {
-                console.log(err);
-                return res.status(400).json({ message: "Error updating user" });
-              }
-              return res.status(200).json({ message: "User image updated successfully" });
-            });
-          });
-        });
-}
 
+const updateDoctor = async (req, res) => {
+     const { id } = req.params;
+   
+     try {
+       const doctor = await User.findByIdAndUpdate(
+         id,
+         { $set: req.body },
+         { new: true }
+       ).select("-password");
+   
+       if (!doctor) {
+         throw new CustomError.NotFoundError(`No doctor with id: ${id}`);
+       }
+   
+       res.status(StatusCodes.OK).json({
+         success: true,
+         doctor,
+       });
+     } catch (error) {
+       next(error);
+     }
+   };
+
+
+   const deleteDoctor = async (req, res) => {
+     const { id } = req.params;
+   
+     try {
+       const doctor = await User.findByIdAndDelete(id);
+   
+       if (!doctor) {
+         throw new CustomError.NotFoundError(`No doctor with id: ${id}`);
+       }
+   
+       res.status(StatusCodes.OK).json({
+         success: true,
+         message: "Doctor deleted successfully",
+       });
+     } catch (error) {
+       next(error);
+     }
+   };
+  
+   
+   
+   
+   
+   
+   
+   
 
 
 module.exports = {
      getOneDoctor,
      getAllDoctors ,
-     updateImage 
+     updateDoctor,
+     deleteDoctor
+     
 }

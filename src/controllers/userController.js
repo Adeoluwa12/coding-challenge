@@ -83,6 +83,40 @@ const updateImage = async (req, res) => {
 };
 
 
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  const user = await User.findByIdAndUpdate(id, updates, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!user) {
+    throw new CustomError.NotFoundError(`No user with id: ${id}`);
+  }
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    user,
+  });
+};
+
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  const user = await User.findByIdAndDelete(id);
+
+  if (!user) {
+    throw new CustomError.NotFoundError(`No user with id: ${id}`);
+  }
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    message: `User with id ${id} has been deleted`,
+  });
+};
+
 
 
 
@@ -90,5 +124,7 @@ const updateImage = async (req, res) => {
 module.exports = {
   getOneUser,
   getAllUsers,
-  updateImage
+  updateImage,
+  updateUser,
+  deleteUser
 }

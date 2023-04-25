@@ -81,7 +81,7 @@ const deleteRating = async (req, res) => {
 };
 
 
-const getSingleDriverRating = async (req, res) => {
+const getSingleDoctorRating = async (req, res) => {
      const { doctor } = req.body;
 
      const doctorId = await Rating.find({ doctor });
@@ -131,5 +131,5 @@ module.exports = {
      review,
      updateRating,
      deleteRating,
-     getSingleDriverRating,
+     getSingleDoctorRating,
 }

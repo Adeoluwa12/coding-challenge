@@ -7,7 +7,9 @@ const path = require('path');
 const {
      getOneUser,
      getAllUsers,
-     updateImage
+     updateImage,
+     updateUser,
+     deleteUser
 } = require('../controllers/userController')
 
 
@@ -41,6 +43,8 @@ router
 router
      .route('/:id')
      .get(getOneUser)
+     .patch(updateUser)
+     .delete(deleteUser)
 
 
 router

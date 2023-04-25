@@ -7,7 +7,8 @@ const router = express.Router();
 const {
      getOneDoctor,
      getAllDoctors,
-     updateImage 
+     updateDoctor,
+     deleteDoctor
 } = require('../controllers/doctorController');
 
 
@@ -20,11 +21,11 @@ router
 router
 .route('/:id')
 .get(getOneDoctor)
+.patch(updateDoctor)
+.delete(deleteDoctor)
 
 
-router
-.route("/:id/image")
-.put(updateImage);
+
 
 
 

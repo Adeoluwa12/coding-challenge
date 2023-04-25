@@ -40,7 +40,49 @@ const getAllRooms = async (req, res) => {
 
 }
 
+// get conv includes two userId
+
+const getTwoUserConversations = async (req, res) => {
+
+     const { firstId , secondId } = req.body;
+
+     const conversation = await Room.findOne({
+       members: { $all: [ firstId, secondId ] }
+     });
+
+     if(!conversation) {
+          throw new CustomError.NotFoundError(`conversation not found`);
+     }
+
+     res.status(StatusCodes.OK).json({
+          message: `true`,
+          conversation
+     })
+}
+
+// Get Conversion of a User;
+
+const getOneUSerConversation = async (req, res) => {
+
+     const {  userId } = req.body;;
+
+  const conversation = await Room.find({
+     members: { $in:  [  userId ] }
+});
+
+if (!conversation) {
+     throw new CustomError.NotFoundError(`conversation not found`);
+}
+  res.status(StatusCodes.OK).json({
+     message: `true`,
+     conversation
+});
+};
+
+
 module.exports = {
      createRoom,
-     getAllRooms
+     getAllRooms,
+     getTwoUserConversations,
+     getOneUSerConversation
 }
