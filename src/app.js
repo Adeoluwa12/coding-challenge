@@ -32,7 +32,7 @@ app.set('socketio', io);
 
 const cors = require("cors");
 const morgan = require("morgan");
-const cookieParser = require("cookie-parser");
+const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
 const rateLimiter = require("express-rate-limit");
 const helmet = require("helmet");
@@ -188,7 +188,7 @@ app.get("/", (req, res) => {
 app.use('/api/v1/auth/doctors', AuthDoctor);
 app.use('/api/v1/doctors', GetDoctor);
 app.use('/api/v1/ratings', RatingDoctor);
-app.use('/api/v1/auth/users', UserAuth);
+app.use('/api/v1/auth/', UserAuth);
 app.use('/api/v1/users', GetUser);
 app.use('/api/v1/appointments', appointmentRouter);
 app.use('/api/v1/rooms', roomRouter);

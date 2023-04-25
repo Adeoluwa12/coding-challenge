@@ -15,12 +15,18 @@ const {
      rejectAppointment
 } = require('../controllers/appointmentController')
 
+const {
+     verifyToken,
+  verifyTokenAndAuthorization,
+  verifyTokenAndAdmin,
+  authenticationMiddleware
+} = require('../middleware/jwt_helper')
 
 
 router
      .route('/')
      .post(createAppointment)
-     .get(getAppointments);
+     .get(authenticationMiddleware,getAppointments);
 
 
 

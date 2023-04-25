@@ -1,41 +1,46 @@
 const jwt = require('jsonwebtoken')
-const CustomError = require("../errors");
 const { StatusCodes } = require('http-status-codes')
 const { UnauthenticatedError } = require('../errors')
 const User = require('../models/User')
+const { ACCOUNT_TYPES } = require('../constant');
 
 
 
-const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.accessToken;
-  if (authHeader) {
-    const token = authHeader.split(" ")[1];
-    jwt.verify(token, process.env.JWT_EXPIRE, (err, user) => {
-      if (err) res.status(StatusCodes.FORBIDDEN).json("Token is not valid!");
-      req.user = user;
-      next();
+
+const verifyToken = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.substring(7);
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: "Invalid token" });
+      } else {
+        req.user = decoded;
+        next();
+      }
     });
   } else {
-    return res.status(401).json("You are not authenticated!");
+    return res.status(401).json({ message: "Token not provided" });
   }
 };
 
+
 const verifyTokenAndAuthorization = (req, res, next) => {
   verifyToken(req, res, () => {
-    if (req.user.id === req.params.id || req.user.isAdmin) {
+    if (req.user.accountType === ACCOUNT_TYPES.ADMIN || req.user.id === req.params.id) {
       next();
     } else {
-      res.status(StatusCodes.FORBIDDEN).json("You are not alowed to do that!");
+      res.status(StatusCodes.FORBIDDEN).json("You are not allowed to perform this action!");
     }
   });
 };
 
 const verifyTokenAndAdmin = (req, res, next) => {
   verifyToken(req, res, () => {
-    if (req.user.isAdmin) {
+    if (req.user.accountType === ACCOUNT_TYPES.ADMIN) {
       next();
     } else {
-      res.status(StatusCodes.FORBIDDEN).json("You are not alowed to do that!");
+      res.status(StatusCodes.FORBIDDEN).json("You are not allowed to perform this action!");
     }
   });
 };
@@ -44,25 +49,34 @@ const verifyTokenAndAdmin = (req, res, next) => {
 
 const authenticationMiddleware = async (req, res, next) => {
   // check header
-  const authHeader = req.headers.authorization
+  const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer')) {
-    throw new UnauthenticatedError('Token not valid')
+    throw new UnauthenticatedError('Token not valid');
   }
-  const token = authHeader.split(' ')[1]
+  const token = authHeader.split(' ')[1];
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET)
-    // attach the user to the job routes
-
-    const user = User.findById(payload.id).select('-password')
-    req.user = user
-
-    //req.user = { userId: payload.userId, type: payload.type }
-    next()
+    // verify token
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    // check if the token is blacklisted
+  
+    // attach the user to the request object
+    const user = await User.findById(payload.id).select('-password');
+    if (!user) {
+      throw new UnauthenticatedError('User not found');
+    }
+    req.user = user;
+    next();
   } catch (error) {
-    throw new UnauthenticatedError('Authentication invalid')
+    if (error instanceof jwt.TokenExpiredError) {
+      throw new UnauthenticatedError('Token expired');
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      throw new UnauthenticatedError('Token invalid');
+    } else {
+      next(error);
+    }
   }
-}
+};
 
 
 module.exports = {

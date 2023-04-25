@@ -1,9 +1,6 @@
 const User = require("../models/User");
-const { ACCOUNT_TYPES } = require('../constant');
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
-
-
 
 
 const validatePasswordString = (password) => {
@@ -15,8 +12,6 @@ const validatePasswordString = (password) => {
           );
      }
 }
-
-
 
 //Create User
 const create = async (req, res) => {
@@ -30,7 +25,6 @@ const create = async (req, res) => {
 
      validatePasswordString(password);
 
-
      const numberExit = await User.findOne({ number })
      if (numberExit) {
           throw new CustomError.BadRequestError(` number exit`)
@@ -41,16 +35,11 @@ const create = async (req, res) => {
           throw new CustomError.BadRequestError(` email exit`)
      }
 
-
-
-
      let user = await User.create({
           email,
           number,
           fullName,
           password,
-
-
      })
 
 
@@ -65,10 +54,8 @@ const create = async (req, res) => {
                email: user.email,
                number: user.number,
           },
-
           token
      })
-
 
 }
 
@@ -95,8 +82,6 @@ const login = async (req, res) => {
           throw new CustomError.UnauthenticatedError('Invalid Credentials');
      }
 
-
-
      const token = user.createJWT()
 
      res.status(StatusCodes.OK).json({
@@ -112,21 +97,17 @@ const login = async (req, res) => {
      });
 };
 
-
-
-
 const logout = async (req, res) => {
+
      res.cookie("token", "logout", {
           httpOnly: true,
           expires: new Date(Date.now() + 1000),
+          secure: process.env.NODE_ENV === "develpoment" ? false : true,
      });
+     res.clearCookie('token'.toLowerCase());
+
      res.status(StatusCodes.OK).json({ msg: "user logged out!" });
 };
-
-
-
-
-
 
 
 module.exports = {
