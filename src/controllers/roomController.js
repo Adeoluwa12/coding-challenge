@@ -11,6 +11,15 @@ const createRoom = async (req, res) => {
           participants: [req.body.senderId, req.body.recevierId]
      });
 
+
+
+     if (!req.body.senderId || !req.body.recevierId) {
+          return res.status(StatusCodes.BAD_REQUEST).json({ message: 'senderId and recevierId are required' });
+     }
+
+
+
+
      const savedRoom = await newRoom.save();
      // Emit socket event to all clients with updated room list
      req.app.get('socketio').emit('updateRooms');
@@ -25,7 +34,9 @@ const createRoom = async (req, res) => {
 
 const getAllRooms = async (req, res) => {
      const rooms = await Room.find().sort({ createdAt: -1 });
-     res.json({ rooms });
+     res.status(StatusCodes.OK).json({ rooms });
+
+
 
 }
 

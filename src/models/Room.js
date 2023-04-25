@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
-const v7 = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 const moment = require('moment');
 
 const roomSchema = new mongoose.Schema({
      _id: {
           type: String,
-          default: () => v7().replace(/\-/g, ""),
+          default: () => uuidv4().replace(/\-/g, ""),
      },
 
      participants: [{

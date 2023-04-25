@@ -13,7 +13,7 @@ const {
 router.post('/', createRoom)
 
 
-router.post('/', getAllRooms
+router.get('/', getAllRooms
 )
 
 

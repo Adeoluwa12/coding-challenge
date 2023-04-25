@@ -18,8 +18,8 @@ const videoCallSchema = new mongoose.Schema({
      },
      status: {
           type: String,
-          enum: ['pending', 'ongoing', 'completed'],
-          default: 'pending'
+          enum: ['calling', 'ongoing', 'completed'],
+          default: 'calling'
      },
      startedAt: {
           type: Date

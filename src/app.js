@@ -24,7 +24,8 @@ const io = require('socket.io')(server, {
 });
 
 
-
+// set socketio object on app
+app.set('socketio', io);
 
 
 // Express packages
@@ -130,10 +131,11 @@ io.on('connection', (socket) => {
 
 
 app.post('/api/v1/chat', async (req, res) => {
-     const { sender, recipient, message } = req.body;
+     const { sender, recipient, message, roomId } = req.body;
 
      // Create a new chat object with the provided data
      const newChat = new Chat({
+          roomId,
           sender,
           recipient,
           message,
@@ -145,21 +147,21 @@ app.post('/api/v1/chat', async (req, res) => {
      // Emit the new message event to the recipient client
      io.to(recipient).emit("newMessage", newChat);
 
-     res.status(200).json({ success: true });
+     res.status(200).json({ success: true, newChat }); 
 });
 
 
 app.post('/api/v1/video-call', async (req, res) => {
      try {
-          const { from, to, signalData } = req.body;
-          const roomId = `${from}-${to}`;
+          const { doctor, user, signalData } = req.body;
+          const roomId = `${doctor}-${user}`;
           const videoCall = new VideoCall({
-               doctor: from,
-               user: to,
+               doctor,
+               user,
                roomId
           });
           await videoCall.save();
-          io.to(to).emit('incomingCall', { signalData, from, roomId });
+          io.to(user).emit('incomingCall', { signalData, doctor, roomId });
           res.status(200).json({ success: true });
      } catch (error) {
           console.log(error);
