@@ -5,6 +5,7 @@ const User = require('../models/User');
 const mongoose = require('mongoose');
 const { APPOINTMENT_STATUS } = require('../constant/index')
 const pusher = require('../controllers/notificationController');
+const sendEmail = require('../utils/mail')
 
 
 
@@ -41,7 +42,15 @@ const createAppointment = async (req, res, next) => {
 
 
 
-     res.status(StatusCodes.CREATED).json({ message: 'Appointment created successfully', appointment: savedAppointment });
+     // Send email notification to the user
+     const title = `Your booking appointment with ${savedAppointment.doctor} at ${savedAppointment.day}${savedAppointment.time} has been scheduled. Thank you. The Vhealth Team`;
+
+
+
+
+
+     await sendEmail(savedAppointment.user.email, "Appointment Booked", title);
+     res.status(StatusCodes.CREATED).json({ message: 'Appointment created Check your mail', appointment: savedAppointment });
 }
 
 
@@ -172,7 +181,7 @@ const acceptAppointment = async (req, res, next) => {
           const message = `Your appointment with id ${appointment._id} has been accepted.`;
 
           pusher.trigger(`user-${userId}`, 'appointment-accepted', { message });
-           console.log(pusher);
+          console.log(pusher);
           res.status(StatusCodes.OK).json({
                message: `Appointment with id ${appointment._id} has been accepted`,
           });
@@ -201,7 +210,7 @@ const rejectAppointment = async (req, res) => {
 
 
 
-          const userId = appointment.user; 
+          const userId = appointment.user;
           const message = `Your appointment with id ${appointment._id} has been rejected.`;
 
           pusher.trigger(`user-${userId}`, 'appointment-rejected', { message });
