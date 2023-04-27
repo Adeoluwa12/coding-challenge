@@ -176,6 +176,11 @@ const acceptAppointment = async (req, res, next) => {
           );
 
 
+          // Send email notification to the user
+          const title = `Your booking appointment with ${appointment.doctor} at ${appointment.day}${appointment.time} has been accepted. Thank you. The Vhealth Team`;
+
+
+          await sendEmail(appointment.user.email, "Appointment Accepted", title);
 
           const userId = appointment.user; // assuming you have a user id in your appointment model
           const message = `Your appointment with id ${appointment._id} has been accepted.`;
@@ -208,6 +213,11 @@ const rejectAppointment = async (req, res) => {
                { $set: { status: APPOINTMENT_STATUS.REJECTED } }
           );
 
+
+          const title = `Your booked appointment with ${appointment.doctor} at ${appointment.day}${appointment.time} has been rejected. Thank you. The Vhealth Team`;
+
+
+          await sendEmail(appointment.user.email, "Appointment Accepted", title);
 
 
           const userId = appointment.user;

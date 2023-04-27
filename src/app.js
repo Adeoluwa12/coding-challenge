@@ -52,6 +52,7 @@ const UserAuth = require('./routers/userAuthRouter');
 const GetUser = require('./routers/userRouter');
 const appointmentRouter = require('./routers/appointmentRouter');
 const roomRouter = require('./routers/roomRouter');
+const passwordRouter = require('./router/passwordRouter')
 
 
 
@@ -192,6 +193,7 @@ app.use('/api/v1/auth/', UserAuth);
 app.use('/api/v1/users', GetUser);
 app.use('/api/v1/appointments', appointmentRouter);
 app.use('/api/v1/rooms', roomRouter);
+app.use("/api/v1/auth/password", passwordRouter)
 
 
 
