@@ -52,7 +52,7 @@ const UserAuth = require('./routers/userAuthRouter');
 const GetUser = require('./routers/userRouter');
 const appointmentRouter = require('./routers/appointmentRouter');
 const roomRouter = require('./routers/roomRouter');
-const passwordRouter = require('./router/passwordRouter')
+const passwordRouter = require('./routers/passwordRouter')
 
 
 

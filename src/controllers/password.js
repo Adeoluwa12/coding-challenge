@@ -3,7 +3,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs')
 const CustomError = require("../errors");
 const { StatusCodes } = require("http-status-codes");
-const sendEmail = require("../utils/sendEmail");
+const sendEmail = require("../utils/mail");
 const Otp = require("../models/Otp");
 const otpGenerator = require("otp-generator");
 
